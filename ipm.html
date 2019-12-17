@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Perspective Transform Example</title>
+<link href="js_example_style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<h2>Perspectiv Transform Example</h2>
+<p>
+    Please wait until opencv.js is loaded...
+</p>
+<div>
+<div class="control"><button id="tryIt" disabled>Try it</button></div>
+<textarea class="code" rows="9" cols="100" id="codeEditor" spellcheck="false">
+</textarea>
+<p class="err" id="errorMessage"></p>
+</div>
+<div>
+    <b>h_trackbar</b>
+    <input type="range" id="h_trackbar" disabled value="0" min="0" max="99" step="1">
+    <label id="h_offset_val" ></label>
+
+    <b>v_trackbar</b>
+    <input type="range" id="v_trackbar" disabled value="0" min="0" max="99" step="1">
+    <label id="v_offset_val" ></label>
+</div>
+<div>
+    <table cellpadding="0" cellspacing="0" width="0" border="0">
+    <tr>
+        <td>
+            <canvas id="canvasInput"></canvas>
+        </td>
+        <td>
+            <canvas id="canvasOutput"></canvas>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="caption">canvasInput <input type="file" id="fileInput" name="file" accept="image/*" /></div>
+        </td>
+        <td>
+            <div class="caption">canvasOutput</div>
+        </td>
+    </tr>
+    </table>
+</div>
+<script src="utils.js" type="text/javascript"></script>
+<script async src="lib/opencv.js"></script>
+<script id="codeSnippet" type="text/code-snippet">
+let src = cv.imread('canvasInput');
+let dst = new cv.Mat();
+let dsize = new cv.Size(src.cols, src.rows);
+let h_offset_bar = document.getElementById('h_trackbar');
+let v_offset_bar = document.getElementById('v_trackbar');
+let h_offset = h_offset_bar.value;
+let v_offset = v_offset_bar.value;
+let h = src.rows;
+let w = src.cols;
+// (data32F[0], data32F[1]) is the first point
+// (data32F[2], data32F[3]) is the sescond point
+// (data32F[4], data32F[5]) is the third point
+// (data32F[6], data32F[7]) is the fourth point
+// let srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [h_offset*w/100, h, w-h_offset*w/100, h, v_offset*w/100, h/2, w-v_offset*w/100, h/2]);
+// let dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [0, h, w, h, 0, 0, w, 0]);
+let srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [100, 360, 550, 360, 298, 225, 342, 225]);
+let dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [150, 360, 490, 360, 150, 0, 490, 0]);
+let M = cv.getPerspectiveTransform(srcTri, dstTri);
+// You can try more different parameters
+// let startPoint = {x: 0, y: h/2};
+// let endPoint = {x: 0, y: h};
+// cv.line(src, startPoint, endPoint, [255, 0, 0, 255]);
+cv.warpPerspective(src, dst, M, dsize);
+cv.imshow('canvasOutput', dst);
+// cv.imshow('canvasInput', src);
+src.delete(); dst.delete(); M.delete(); srcTri.delete(); dstTri.delete();
+</script>
+<script type="text/javascript">
+let utils = new Utils('errorMessage');
+
+utils.loadCode('codeSnippet', 'codeEditor');
+utils.loadImageToCanvas('pictures/lane.jpg', 'canvasInput');
+utils.addFileInputHandler('fileInput', 'canvasInput');
+
+let tryIt = document.getElementById('tryIt');
+tryIt.addEventListener('click', () => {
+    utils.executeCode('codeEditor');
+});
+
+utils.loadOpenCv(() => {
+    tryIt.removeAttribute('disabled');
+});
+
+let h_trackbar = document.getElementById('h_trackbar');
+h_trackbar.addEventListener('input', () => {
+    utils.executeCode('codeEditor');
+});
+
+let h_offset_val = document.getElementById('h_offset_val');
+h_offset_val.innerText = h_trackbar.value;
+h_trackbar.addEventListener('input', () => {
+    h_offset_val.innerText = h_trackbar.value;
+});
+
+utils.loadOpenCv(() => {
+    h_trackbar.removeAttribute('disabled');
+    utils.executeCode('codeEditor');
+});
+
+let v_trackbar = document.getElementById('v_trackbar');
+v_trackbar.addEventListener('input', () => {
+    utils.executeCode('codeEditor');
+});
+
+let v_offset_val = document.getElementById('v_offset_val');
+v_offset_val.innerText = v_trackbar.value;
+v_trackbar.addEventListener('input', () => {
+    v_offset_val.innerText = v_trackbar.value;
+});
+
+utils.loadOpenCv(() => {
+    v_trackbar.removeAttribute('disabled');
+    utils.executeCode('codeEditor');
+});
+</script>
+</body>
+</html>
