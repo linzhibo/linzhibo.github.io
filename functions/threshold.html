@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Trackbar Example</title>
+<link href="../js_example_style.css" rel="stylesheet" type="text/css" />
+</head>
+    <ul>
+        <a href="../index.html">Homepage</a>
+    </ul>
+<body>
+<h2>Thresholding rgb/gray</h2>
+<ul>
+    <li><a href="https://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/threshold.html" target="_blank">Threshold opencv reference</a></li>
+</ul>
+<div>
+<textarea class="code" rows="12" cols="80" id="codeEditor" spellcheck="false">
+</textarea>
+<p class="err" id="errorMessage"></p>
+</div>
+<div>
+    <b>trackbar</b>
+    <div>
+        <input type="range" id="trackbar" disabled value="0" min="0" max="200" step="1">
+        <label id="weightValue" ></label>
+    </div>
+    <div>
+        <input type="checkbox" id="box" name="grayscale" value="box">
+        <label for="box">grayscale</label>
+    </div>
+    <div>
+        <table cellpadding="0" cellspacing="0" width="0" border="0">
+        <tr>
+            <td>
+                <canvas id="canvasInput"></canvas>
+            </td>
+            <td>
+                <canvas id="canvasOutput"></canvas>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="caption">canvasInput <input type="file" id="fileInput" name="file" accept="image/*" /></div>
+            </td>
+            <td>
+                <div class="caption">canvasOutput</div>
+            </td>
+        </tr>
+        </table>
+    </div>
+</div>
+<script src="../utils.js" type="text/javascript"></script>
+<script id="codeSnippet" type="text/code-snippet">
+let trackbar = document.getElementById('trackbar');
+let checkbox = document.getElementById('box');
+let checked = checkbox.checked;
+let alpha = trackbar.value/1.0;
+let src = cv.imread('canvasInput');
+if(checked>0)
+{
+    cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
+}
+let dst = new cv.Mat();
+cv.threshold(src, dst, alpha, 200, cv.THRESH_BINARY);
+cv.imshow('canvasOutput', dst);
+dst.delete();
+src.delete();
+</script>
+<script type="text/javascript">
+let utils = new Utils('errorMessage');
+
+utils.loadCode('codeSnippet', 'codeEditor');
+utils.loadImageToCanvas('../pictures/alaskan.png', 'canvasInput');
+utils.addFileInputHandler('fileInput', 'canvasInput');
+
+let trackbar = document.getElementById('trackbar');
+trackbar.addEventListener('input', () => {
+    utils.executeCode('codeEditor');
+});
+
+let weightValue = document.getElementById('weightValue');
+weightValue.innerText = trackbar.value;
+trackbar.addEventListener('input', () => {
+    weightValue.innerText = trackbar.value;
+});
+
+
+let checkbox = document.getElementById('box');
+checkbox.addEventListener('change', () => {
+    utils.executeCode('codeEditor');
+});
+
+utils.loadOpenCv(() => {
+    trackbar.removeAttribute('disabled');
+    utils.executeCode('codeEditor');
+});
+
+</script>
+</body>
+</html>
