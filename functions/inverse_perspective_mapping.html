@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Trackbar Example</title>
+<link href="../css/functions.css" rel="stylesheet" type="text/css" />
+</head>
+    <ul>
+        <a href="../index.html">Homepage</a>
+    </ul>
+<body>
+<h2>Inverse Perspective Mapping</h2>
+<ul>
+    <li><a href="https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html#warpperspective" target="_blank">Threshold opencv reference</a></li>
+</ul>
+<div>
+<textarea class="code" rows="12" cols="80" id="codeEditor" spellcheck="false">
+</textarea>
+<p class="err" id="errorMessage"></p>
+</div>
+    <div>
+        <input type="checkbox" id="box" name="grayscale" value="box">
+        <label for="box">grayscale</label>
+    </div>
+    <div>
+        <table cellpadding="0" cellspacing="0" width="0" border="0">
+        <tr>
+            <td>
+                <p class="trackbar">
+                    <input type="range" id="alpha_bar" class="trackbar" disabled value="0" min="0" max="99" step="1">
+                    <span>Alpha: <label id="alpha_val" ></label>  %</span>
+                </p>
+
+                <p class="trackbar">
+                        <input type="range" id="beta_bar" class="trackbar" disabled value="0" min="0" max="99" step="1">
+                        <span>Beta: <label id="beta_val" ></label>  %</span>
+                </p>
+            </td>
+            <td>
+                <p class="trackbar">
+                    <input type="range" id="alpha_dst_bar" class="trackbar" disabled value="0" min="0" max="99" step="1">
+                    <span>Alpha_dst: <label id="alpha_dst_val" ></label>  %</span>
+                </p>
+
+                <p class="trackbar">
+                        <input type="range" id="beta_dst_bar" class="trackbar" disabled value="0" min="0" max="99" step="1">
+                        <span>Beta_dst: <label id="beta_dst_val" ></label>  %</span>
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <canvas id="canvasInput"></canvas>
+            </td>
+            <td>
+                <canvas id="canvasOutput"></canvas>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="caption">canvasInput <input type="file" id="fileInput" name="file" accept="image/*" /></div>
+            </td>
+            <td>
+                <div class="caption">canvasOutput</div>
+            </td>
+        </tr>
+        </table>
+    </div>
+</div>
+<script src="../utils.js" type="text/javascript"></script>
+<script id="codeSnippet" type="text/code-snippet">
+let alpha_bar = document.getElementById('alpha_bar');
+let beta_bar = document.getElementById('beta_bar');
+let checkbox = document.getElementById('box');
+let checked = checkbox.checked;
+let alpha = alpha_bar.value/1.0;
+let beta = beta_bar.value/1.0;
+
+let src = cv.imread('canvasInput');
+let h = src.rows;
+let w = src.cols;
+
+let offset_1 = alpha*w/200;
+if(checked>0)
+{
+    cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
+}
+let dst = new cv.Mat();
+
+let srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [0, h, w, h, w - offset_1, h/2, offset_1, h/2]);
+let dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [w/2-10, h, w/2+10, h, w, 0, 0, 0]);
+let M = cv.getPerspectiveTransform(srcTri, dstTri);
+let dsize = new cv.Size(src.cols, src.rows);
+cv.warpPerspective(src, dst, M, dsize);
+let startPoint = {x: 0, y: h/2};
+let endPoint = {x: 0, y: h/2};
+
+// let src_with_box = src;
+// cv.line(src_with_box, startPoint, endPoint, [255, 0, 0, 255],thickness=10);
+// cv.imshow('canvasInput', src);
+cv.imshow('canvasOutput', dst);
+
+srcTri.delete();dstTri.delete();
+dst.delete();src.delete();
+// src_with_box.delete();
+M.delete();
+</script>
+
+<script type="text/javascript">
+let utils = new Utils('errorMessage');
+
+utils.loadCode('codeSnippet', 'codeEditor');
+utils.loadImageToCanvas('../pictures/va_rgb.png', 'canvasInput');
+utils.addFileInputHandler('fileInput', 'canvasInput');
+
+let alpha_bar = document.getElementById('alpha_bar');
+alpha_bar.addEventListener('input', () => {
+    utils.executeCode('codeEditor');
+});
+
+let alpha_val = document.getElementById('alpha_val');
+alpha_val.innerText = alpha_bar.value;
+alpha_bar.addEventListener('input', () => {
+    alpha_val.innerText = alpha_bar.value;
+});
+
+let beta_bar = document.getElementById('beta_bar');
+beta_bar.addEventListener('input', () => {
+    utils.executeCode('codeEditor');
+});
+
+let beta_val = document.getElementById('beta_val');
+beta_val.innerText = beta_bar.value;
+beta_bar.addEventListener('input', () => {
+    beta_val.innerText = beta_bar.value;
+});
+
+
+let checkbox = document.getElementById('box');
+checkbox.addEventListener('change', () => {
+    utils.executeCode('codeEditor');
+});
+
+utils.loadOpenCv(() => {
+    alpha_bar.removeAttribute('disabled');
+    beta_bar.removeAttribute('disabled');
+    utils.executeCode('codeEditor');
+});
+
+</script>
+</body>
+</html>
