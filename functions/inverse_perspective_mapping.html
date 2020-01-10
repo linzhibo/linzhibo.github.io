@@ -64,44 +64,101 @@
                 <div class="caption">canvasOutput</div>
             </td>
         </tr>
+        <tr>
+            <td>
+                <canvas id="img"></canvas>
+            </td>
+            <td>
+                <canvas id="dst"></canvas>
+            </td>
+        </tr>
+
         </table>
     </div>
 </div>
-<script src="../utils.js" type="text/javascript"></script>
+<script src="../js/utils.js" type="text/javascript"></script>
 <script id="codeSnippet" type="text/code-snippet">
 let alpha_bar = document.getElementById('alpha_bar');
 let beta_bar = document.getElementById('beta_bar');
+let alpha_dst_bar = document.getElementById('alpha_dst_bar');
+let beta_dst_bar = document.getElementById('beta_dst_bar');
 let checkbox = document.getElementById('box');
 let checked = checkbox.checked;
 let alpha = alpha_bar.value/1.0;
 let beta = beta_bar.value/1.0;
+let alpha_dst = alpha_dst_bar.value/1.0;
+let beta_dst = beta_dst_bar.value/1.0;
 
 let src = cv.imread('canvasInput');
 let h = src.rows;
 let w = src.cols;
 
 let offset_1 = alpha*w/200;
+let offset_2 = beta*w/200;
+
+let offset_dst_1 = alpha_dst*w/200;
+let offset_dst_2 = beta_dst*w/200;
+
 if(checked>0)
 {
     cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
 }
 let dst = new cv.Mat();
 
-let srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [0, h, w, h, w - offset_1, h/2, offset_1, h/2]);
-let dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [w/2-10, h, w/2+10, h, w, 0, 0, 0]);
+let p1_x = offset_1;
+let p1_y = h/2;
+let p2_x = w - offset_1;
+let p2_y = h/2;
+let p3_x = offset_2;
+let p3_y = h;
+let p4_x = w - offset_2;
+let p4_y = h;
+
+let d1_x = offset_dst_1;
+let d1_y = 0;
+let d2_x = w -offset_dst_1;
+let d2_y = 0;
+let d3_x = offset_dst_2;
+let d3_y = h;
+let d4_x = w - offset_dst_2;
+let d4_y = h;
+
+let srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [p1_x, p1_y, p2_x, p2_y, p4_x, p4_y, p3_x, p3_y]);
+let dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [d1_x, d1_y, d2_x, d2_y, d4_x, d4_y, d3_x, d3_y]);
+
+// let srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [0, h, w, h, w - offset_1, h/2, offset_1, h/2]);
+// let dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [w/2-10, h, w/2+10, h, w, 0, 0, 0]);
 let M = cv.getPerspectiveTransform(srcTri, dstTri);
 let dsize = new cv.Size(src.cols, src.rows);
-cv.warpPerspective(src, dst, M, dsize);
-let startPoint = {x: 0, y: h/2};
-let endPoint = {x: 0, y: h/2};
+cv.warpPerspective(src, dst, M, dsize, flags=cv.INTER_LINEAR);
 
-// let src_with_box = src;
-// cv.line(src_with_box, startPoint, endPoint, [255, 0, 0, 255],thickness=10);
-// cv.imshow('canvasInput', src);
+// draw selected zone
+
+let p1 = {x: p1_x, y: p1_y};
+let p2 = {x: p2_x, y: p2_y};
+let p3 = {x: p3_x, y: p3_y};
+let p4 = {x: p4_x, y: p4_y};
+cv.line(src, p1, p2, [255, 0, 0, 255],thickness=3);
+cv.line(src, p1, p3, [255, 0, 0, 255],thickness=3);
+cv.line(src, p2, p4, [255, 0, 0, 255],thickness=3);
+cv.line(src, p3, p4, [255, 0, 0, 255],thickness=3);
+
+let d1 = {x: d1_x, y: d1_y};
+let d2 = {x: d2_x, y: d2_y};
+let d3 = {x: d3_x, y: d3_y};
+let d4 = {x: d4_x, y: d4_y};
+cv.line(dst, d1, d2, [255, 0, 255, 255],thickness=3);
+cv.line(dst, d1, d3, [255, 0, 255, 255],thickness=3);
+cv.line(dst, d2, d4, [255, 0, 255, 255],thickness=3);
+cv.line(dst, d3, d4, [255, 0, 255, 255],thickness=3);
+
+cv.imshow('img', src);
 cv.imshow('canvasOutput', dst);
 
-srcTri.delete();dstTri.delete();
-dst.delete();src.delete();
+srcTri.delete();
+dstTri.delete();
+dst.delete();
+src.delete();
 // src_with_box.delete();
 M.delete();
 </script>
@@ -110,7 +167,7 @@ M.delete();
 let utils = new Utils('errorMessage');
 
 utils.loadCode('codeSnippet', 'codeEditor');
-utils.loadImageToCanvas('../pictures/va_rgb.png', 'canvasInput');
+utils.loadImageToCanvas('../pictures/va_mask.png', 'canvasInput');
 utils.addFileInputHandler('fileInput', 'canvasInput');
 
 let alpha_bar = document.getElementById('alpha_bar');
@@ -135,6 +192,28 @@ beta_bar.addEventListener('input', () => {
     beta_val.innerText = beta_bar.value;
 });
 
+let alpha_dst_bar = document.getElementById('alpha_dst_bar');
+alpha_dst_bar.addEventListener('input', () => {
+    utils.executeCode('codeEditor');
+});
+
+let alpha_dst_val = document.getElementById('alpha_dst_val');
+alpha_dst_val.innerText = alpha_dst_bar.value;
+alpha_dst_bar.addEventListener('input', () => {
+    alpha_dst_val.innerText = alpha_dst_bar.value;
+});
+
+let beta_dst_bar = document.getElementById('beta_dst_bar');
+beta_dst_bar.addEventListener('input', () => {
+    utils.executeCode('codeEditor');
+});
+
+let beta_dst_val = document.getElementById('beta_dst_val');
+beta_dst_val.innerText = beta_dst_bar.value;
+beta_dst_bar.addEventListener('input', () => {
+    beta_dst_val.innerText = beta_dst_bar.value;
+});
+
 
 let checkbox = document.getElementById('box');
 checkbox.addEventListener('change', () => {
@@ -144,6 +223,8 @@ checkbox.addEventListener('change', () => {
 utils.loadOpenCv(() => {
     alpha_bar.removeAttribute('disabled');
     beta_bar.removeAttribute('disabled');
+    alpha_dst_bar.removeAttribute('disabled');
+    beta_dst_bar.removeAttribute('disabled');
     utils.executeCode('codeEditor');
 });
 
