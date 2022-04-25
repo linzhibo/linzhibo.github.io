@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+<style>
 
+#source { 
+    visibility: hidden;
+     }
+
+</style>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +15,7 @@
 
   <style>
     * {
-      box-sizing: border-box;
+      /* box-sizing: border-box; */
       color: #ce072e;
     }
 
@@ -24,8 +30,10 @@
 </head>
 
 <body>
-
-  <canvas id="c"></canvas>
+<div id="container">
+    <canvas id = "c"></canvas>
+  <!-- <canvas id="c" style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fitem%2F202003%2F29%2F20200329043918_2FUvk.thumb.400_0.gif&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1653468008&t=758e89af7c1afdbf11debc830e260665');"></canvas> -->
+  <img id="source" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fitem%2F202003%2F29%2F20200329043918_2FUvk.thumb.400_0.gif&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1653468008&t=758e89af7c1afdbf11debc830e260665">
   <script src="https://cdn.jsdelivr.net/gh/anuraghazra/Verly.js@v1.2.1/dist/verly.bundle.js"></script>
   <script>
 
@@ -56,6 +64,13 @@ window.onload = function () {
       ctx.clearRect(0, 0, width, height);
       
       cloth.tear(150);
+      if(cloth.sticks.length < 419)
+      {
+          console.log(cloth.sticks.length);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          document.getElementById("source").style.visibility = "visible";
+          return;
+      }
       verly.update();
       verly.render();
 
@@ -67,6 +82,7 @@ window.onload = function () {
     animate();
   }
   </script>
+</div>
 </body>
 
 </html>
