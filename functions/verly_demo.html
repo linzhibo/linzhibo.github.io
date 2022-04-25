@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Verly.js</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      color: #ce072e;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <canvas id="c"></canvas>
+  <script src="https://cdn.jsdelivr.net/gh/anuraghazra/Verly.js@v1.2.1/dist/verly.bundle.js"></script>
+  <script>
+
+window.onload = function () {
+    let canvas = document.getElementById('c');
+    let ctx = canvas.getContext('2d');
+    let width = 600;
+    let height = 600;
+    canvas.width = width;
+    canvas.height = height;
+
+    // iteration, canvas, ctx
+    let verly = new Verly(16, canvas, ctx);
+
+    // x, y, w, h
+    // verly.createBox(20, 100, 100, 100);
+    // x, y, segments, radius
+    // verly.createHexagon(200, 200, 16, 50);
+    // x, y, w, h, segments, pinOffset
+    let cloth = verly.createCloth(300, 200, 300, 300, 15, 2);
+    
+    // x, y, segments, gap, pin
+    // verly.createRope(500, 150, 20, 15, 0);
+    // x, y
+    // verly.createRagdoll(300, 200);
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      
+      cloth.tear(150);
+      verly.update();
+      verly.render();
+
+      // for interacting with points
+      verly.interact();
+      
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+  </script>
+</body>
+
+</html>
