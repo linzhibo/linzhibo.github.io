@@ -28,6 +28,7 @@
 <body>
 <div id="container">
     <canvas id = "c"></canvas>
+    <p id="test"></p>
   <script src="https://cdn.jsdelivr.net/gh/anuraghazra/Verly.js@v1.2.1/dist/verly.bundle.js"></script>
   <script>
 
@@ -38,6 +39,7 @@ window.onload = function () {
     let height = 600;
     canvas.width = width;
     canvas.height = height;
+    let thresh = Math.floor(Math.random() * (415 - 400 + 1) + 400);
 
     // iteration, canvas, ctx
     let verly = new Verly(16, canvas, ctx);
@@ -58,14 +60,18 @@ window.onload = function () {
       ctx.clearRect(0, 0, width, height);
       
       cloth.tear(150);
-      if(cloth.sticks.length < 410)
+      if(cloth.sticks.length <= thresh)
       {
           console.log(cloth.sticks.length);
-          window.location.href = 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fitem%2F202003%2F29%2F20200329043918_2FUvk.thumb.400_0.gif&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1653468008&t=758e89af7c1afdbf11debc830e260665';
+          window.location.href = 'particles_shift.html';
           return;
       }
+      else
+      {
+      document.getElementById("test").innerHTML = cloth.sticks.length - thresh;
       verly.update();
       verly.render();
+      }
 
       // for interacting with points
       verly.interact();

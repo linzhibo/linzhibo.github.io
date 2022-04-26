@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Particle Shift </title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.3/dat.gui.min.js"></script>
+  <script src="https://anuraghazra.github.io/Candy.js/dist/Candy.build.js"></script>
+  <script src="../js/particles_shift/Vector.js"></script>
+  <link preload href="https://fonts.googleapis.com/css?family=Charm|Fugaz+One|Lobster|Shadows+Into+Light|Staatliches"
+    rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    canvas {
+      margin: 0;
+      padding: 0;
+    }
+
+    .ui {
+      display: flex;
+      justify-content: center;
+    }
+
+    .container input {
+      font-family: 'Fugaz One';
+      flex: 1 0 1;
+      flex-basis: 50%;
+      padding: 5px;
+      color: rgba(155, 155, 255, 1);
+      font-size: 24px;
+      border: none;
+      border-bottom: 2px solid rgba(155, 155, 255, 1);
+      border-radius: 5px;
+      text-align: center;
+      transition: 0.5s;
+    }
+
+    .container input:focus {
+      outline: none;
+      border-bottom: 4px solid rgba(155, 155, 255, 1);
+    }
+
+    #datgui {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: black;
+      padding-top: 5px;
+      color: white;
+      font-size: 12px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      visibility: hidden;
+    }
+
+    #datgui p {
+      margin-left: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <style>
+    .github-corner:hover .octo-arm {
+      animation: octocat-wave 560ms ease-in-out
+    }
+
+    @keyframes octocat-wave {
+
+      0%,
+      100% {
+        transform: rotate(0)
+      }
+
+      20%,
+      60% {
+        transform: rotate(-25deg)
+      }
+
+      40%,
+      80% {
+        transform: rotate(10deg)
+      }
+    }
+
+    @media (max-width:500px) {
+      .github-corner:hover .octo-arm {
+        animation: none
+      }
+
+      .github-corner .octo-arm {
+        animation: octocat-wave 560ms ease-in-out
+      }
+    }
+  </style>
+
+  <div id="datgui">
+    <p>
+      Hover to Repel <br>
+      Hold Click to attract
+    </p>
+  </div>
+  <div class="container">
+    <canvas id="c"></canvas>
+    <div class="ui">
+      <input id="text" maxlength="10">
+    </div>
+  </div>
+
+  <script src="../js/particles_shift/global.js"></script>
+  <script src="../js/particles_shift/Points.js"></script>
+  <script src="../js/particles_shift/index.js"></script>
+</body>
+
+</html>
