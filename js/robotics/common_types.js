@@ -1,12 +1,16 @@
-function Pose2D(x, y, yaw) {
-    this.x = x || 0.0;
-    this.y = y || 0.0;
-    this.yaw = yaw || 0.0;
+class Pose2D {
+    constructor(x, y, yaw) {
+        this.x = x || 0.0;
+        this.y = y || 0.0;
+        this.yaw = yaw || 0.0;
+    }
 }
   
-function Vector2D(x, y) {
-    this.x = x || 0.0;
-    this.y = y || 0.0;
+class Vector2D {
+    constructor(x, y) {
+        this.x = x || 0.0;
+        this.y = y || 0.0;
+    }
 }
 
 class Path{

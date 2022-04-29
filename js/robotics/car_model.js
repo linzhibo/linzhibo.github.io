@@ -1,7 +1,36 @@
 
 // utils
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
-const normalizeAngle = (theta) => theta - 2*Math.PI * Math.floor((theta + Math.PI) / 2*Math.PI)
+
+function normalizeAngle(theta) {
+    while (theta > Math.PI) {
+        theta -= 2 * Math.PI;
+    }
+    while (theta < -Math.PI) {
+        theta += 2 * Math.PI;
+    }
+    return theta;
+}
+
+function arrayEquals(a, b) {
+    return Array.isArray(a) &&
+        Array.isArray(b) &&
+        a.length === b.length &&
+        a.every((val, index) => val === b[index]);
+}
+
+// like numpy.arange
+function arange(start, stop, step, endpoint = false) {
+    var num = Math.ceil(Math.abs(start - stop) / Math.abs(step));
+    if (endpoint){num = num+1;}
+    return Array.from({length: num}, (_, i) => start + step * i);
+}
+
+function linspace(start, stop, num, endpoint = false) {
+    const div = endpoint ? (num - 1) : num;
+    const step = (stop - start) / div;
+    return Array.from({length: num}, (_, i) => start + step * i);
+}
 
 // classes
 class Car {
@@ -48,24 +77,7 @@ class Car {
         ctx.restore();
 
     }
-};
-
-class Path{
-    constructor(start_point, end_point, heading_point) {
-        this.start_point = start_point;
-        this.end_point = end_point;
-        this.end_heading_point = heading_point
-    }
-    render() {
-        ctx.beginPath();
-        ctx.strokeStyle = "green";
-        ctx.moveTo(this.start_point.x, this.start_point.y);
-        ctx.bezierCurveTo(20, 100, 200, 100, this.end_point.x, this.end_point.y);
-        ctx.stroke(); 
-    }
-
-};
-  
+};  
 
 function canvas_arrow(context, fromx, fromy, tox, toy) {
     let headlen = 10; // length of head in pixels

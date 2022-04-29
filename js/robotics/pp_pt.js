@@ -11,9 +11,9 @@ var ctx = canvas.getContext('2d');
 resize();
 
 var car = new Car(50, 50, "gray");
-var arrow_head_pose = { x: 0, y: 0 };
-var goal_pose = { x: 0, y: 0 };
-var start_pose = { x: 0, y: 0 };
+var arrow_head_pose = new Pose2D(0,0,0);
+var goal_pose = new Pose2D(0,0,0);
+var start_pose = new Pose2D(0,0,0);
 var path = new Path(start_pose, goal_pose, arrow_head_pose);
 
 window.addEventListener('resize', resize);
@@ -26,9 +26,16 @@ function setGoalPosition(e) {
   goal_pose.x = e.clientX;
   goal_pose.y = e.clientY;
 }
-function setStartPosition(x, y) {
+function setStartPosition(x, y, yaw) {
   start_pose.x = x;
   start_pose.y = y;
+  start_pose.yaw = yaw;
+}
+function setGoalYaw(from_p, to_p){
+  let dx = to_p.x - from_p.x;
+  let dy = to_p.y - from_p.y;
+  let angle = Math.atan2(dy, dx);
+  goal_pose.yaw = angle;
 }
 
 // new position from mouse event
@@ -47,7 +54,13 @@ function draw_path()
 }
 
 function path_plan(e) {
-  setStartPosition(car.x, car.y);
+  setStartPosition(car.x, car.y, car.yaw);
+  setGoalYaw(goal_pose, arrow_head_pose);
+  // let paths = reeds_shepp_path_planning(
+  //   start_pose, goal_pose, 0.1, 0.05)
+  let pahts = reeds_shepp_path_planning(
+    new Pose2D(-1.0, -4.0, -0.35), new Pose2D(5.0, 5.0, 0.436), 0.1, 0.05
+  )
   track();
 }
 
@@ -56,7 +69,7 @@ function track(){
   // car.update(0.5, 0.1, 0.1);
   car.render();
   canvas_arrow(ctx, goal_pose.x, goal_pose.y, arrow_head_pose.x, arrow_head_pose.y);
-  path.render();
+  // path.render();
   raf = window.requestAnimationFrame(track);
 }
 
