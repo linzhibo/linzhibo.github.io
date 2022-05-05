@@ -44,23 +44,11 @@ function setPosition(e) {
   arrow_head_pose.y = e.clientY;
 }
 
-function draw_path()
-{
-  ctx.beginPath();
-  ctx.strokeStyle = 'green';
-  ctx.moveTo(start_pose.x, start_pose.y);
-  ctx.lineTo(goal_pose.x, goal_pose.y);
-  ctx.stroke();
-}
-
 function path_plan(e) {
   setStartPosition(car.x, car.y, car.yaw);
   setGoalYaw(goal_pose, arrow_head_pose);
-  // let paths = reeds_shepp_path_planning(
-  //   start_pose, goal_pose, 0.1, 0.05)
-  let pahts = reeds_shepp_path_planning(
-    new Pose2D(-1.0, -4.0, -0.35), new Pose2D(5.0, 5.0, 0.436), 0.1, 0.05
-  )
+  let car_curvature = Math.tan(car.max_steer) / car.wheel_base
+  path = reeds_shepp_path_planning( start_pose, goal_pose, car_curvature, 1)
   track();
 }
 
@@ -69,7 +57,7 @@ function track(){
   // car.update(0.5, 0.1, 0.1);
   car.render();
   canvas_arrow(ctx, goal_pose.x, goal_pose.y, arrow_head_pose.x, arrow_head_pose.y);
-  // path.render();
+  path.render();
   raf = window.requestAnimationFrame(track);
 }
 

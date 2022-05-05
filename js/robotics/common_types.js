@@ -25,4 +25,17 @@ class Path{
         this.yaw = [] //orientations [rad]
         this.directions = [] //directions (1:forward, -1:backward)
     }
+
+    render() {
+        if (this.x == []) {
+            return;
+          }
+        ctx.beginPath();
+        ctx.strokeStyle = 'green';
+        ctx.moveTo(this.x[0], this.y[0]);
+        for (let i = 1; i < this.x.length; i++) {
+            ctx.lineTo(this.x[i], this.y[i]);
+        }
+        ctx.stroke();
+    }
 }

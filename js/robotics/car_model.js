@@ -22,8 +22,11 @@ function arrayEquals(a, b) {
 // like numpy.arange
 function arange(start, stop, step, endpoint = false) {
     var num = Math.ceil(Math.abs(start - stop) / Math.abs(step));
-    if (endpoint){num = num+1;}
-    return Array.from({length: num}, (_, i) => start + step * i);
+    arr = Array.from({ length: num }, (_, i) => start + step * i);
+    if (endpoint && Math.abs(arr[arr.length-1] - stop) > (step/2.0) ) {
+        arr.push(stop);
+    }
+    return arr;
 }
 
 function linspace(start, stop, num, endpoint = false) {

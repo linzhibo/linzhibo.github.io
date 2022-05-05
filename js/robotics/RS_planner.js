@@ -219,7 +219,7 @@ function interpolate(dist, length, mode, max_curvature, origin_x, origin_y, orig
 }
 
 function generate_local_course(lengths, modes, max_curvature, step_size) {
-    var interpolate_dists_list = calc_interpolate_dists_list(lengths, step_size)
+    var interpolate_dists_list = calc_interpolate_dists_list(lengths, step_size);
     var [origin_x, origin_y, origin_yaw] = [0.0, 0.0, 0.0];
     var [xs, ys, yaws, directions] = [[], [], [], []];
     for (let i in interpolate_dists_list) {
@@ -230,8 +230,7 @@ function generate_local_course(lengths, modes, max_curvature, step_size) {
             var dist = interp_dists[j];
             var [x, y, yaw, direction] = interpolate(dist, length, mode,
                 max_curvature, origin_x,
-                origin_y, origin_yaw)
-            console.log([mode, x, y, yaw, direction])
+                origin_y, origin_yaw);
             xs.push(x);
             ys.push(y);
             yaws.push(yaw);
@@ -259,24 +258,36 @@ function reeds_shepp_path_planning(
     paths = straight_curve_straight(x, y, dth, paths, step_size);
     paths = curve_straight_curve(x, y, dth, paths, step_size);
     paths = curve_curve_curve(x, y, dth, paths, step_size);
+    let min_path_L = 99999;
+    var best_path_index = 99999;
+    for (let i = 0; i < paths.length; i++) {
+        var [xs, ys, yaws, directions] = generate_local_course(paths[i].lengths,
+            paths[i].ctypes, curvature,
+            step_size * curvature);
 
-    for (let i in paths) {
-        let path = paths[i];
+        // convert global coordinate
+        for (let j in xs) {
+            let ix = xs[j];
+            let iy = ys[j];
+            let yaw = yaws[j];
+            paths[i].x[j] =  Math.cos(-start_pose.yaw) * ix + Math.sin(-start_pose.yaw) * iy + start_pose.x;
+            paths[i].y[j] = -Math.sin(-start_pose.yaw) * ix + Math.cos(-start_pose.yaw) * iy + start_pose.y;
+            paths[i].yaw[j] = normalizeAngle(yaw + start_pose.yaw);
+        }
+        paths[i].directions = directions
 
-        var [xs, ys, yaws, directions] = generate_local_course(path.lengths,
-            path.ctypes, curvature,
-            step_size * curvature)
-        break
-
-    //     // convert global coordinate
-    //     path.x = [math.cos(-q0[2]) * ix + math.sin(-q0[2]) * iy + q0[0] for
-    //         (ix, iy) in zip(xs, ys)]
-    //     path.y = [-math.sin(-q0[2]) * ix + math.cos(-q0[2]) * iy + q0[1] for
-    //         (ix, iy) in zip(xs, ys)]
-    //     path.yaw = [pi_2_pi(yaw + q0[2]) for yaw in yaws]
-    //     path.directions = directions
-    //     path.lengths = [length / maxc for length in path.lengths]
-    //     path.L = path.L / maxc
+        for (let k in paths[i].lengths) {
+            paths[i].lengths[k] = paths[i].lengths[k] / curvature;
+        }
+        paths[i].L = paths[i].L / curvature;
+        if (paths[i].L < min_path_L) {
+            min_path_L = paths[i].L;
+            best_path_index = i;
+        }
+        
     }
-    return paths;
+    if (paths == []) {
+        return undefined;
+    }
+    return paths[best_path_index];
 }
