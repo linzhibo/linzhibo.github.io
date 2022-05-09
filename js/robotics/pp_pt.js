@@ -4,7 +4,7 @@ var canvas = document.getElementById('canvas');
 
 // some hotfixes... ( ≖_≖)
 document.body.style.margin = 0;
-canvas.style.position = 'fixed';
+// canvas.style.position = 'fixed';
 
 // get canvas 2D context and set him correct size
 var ctx = canvas.getContext('2d');
@@ -45,6 +45,9 @@ function setPosition(e) {
 }
 
 function path_plan(e) {
+  if (mouse_outside_canvas(e)) {
+    return;
+  }
   path_tracker.reset();
   setStartPosition(car.x, car.y, car.yaw);
   setGoalYaw(goal_pose, arrow_head_pose);
@@ -79,12 +82,20 @@ function resize() {
   // ctx.canvas.height = window.innerHeight;
 }
 
+function mouse_outside_canvas(e) {
+  return e.clientY > ctx.canvas.height || e.clientX > ctx.canvas.width || goal_pose.y > ctx.canvas.height;
+}
+
 function draw(e) {
-  if (e.buttons !== 1) return;
+  if (e.buttons !== 1 || mouse_outside_canvas(e)) { return; }
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   car.render();
   car.reset_speed();
   car.reset_history_points();
   canvas_arrow(ctx, goal_pose.x, goal_pose.y, arrow_head_pose.x, arrow_head_pose.y);
   setPosition(e);
+}
+
+function get_speed_input() {
+  car.set_max_speed(document.getElementById('car_speed').value);
 }
