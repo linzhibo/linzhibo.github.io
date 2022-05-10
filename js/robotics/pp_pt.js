@@ -17,6 +17,7 @@ var goal_pose = new Pose2D(0,0,0);
 var start_pose = new Pose2D(0,0,0);
 var path = new Path(start_pose, goal_pose, arrow_head_pose);
 var path_tracker = new PurePursuit();
+var arrived = false;
 
 document.addEventListener('mousedown', setGoalPosition);
 document.addEventListener('mouseup', path_plan);
@@ -49,12 +50,13 @@ function path_plan(e) {
     return;
   }
   path_tracker.reset();
+  arrived = false;
   setStartPosition(car.x, car.y, car.yaw);
   setGoalYaw(goal_pose, arrow_head_pose);
   let car_curvature = Math.tan(car.max_steer) / car.wheel_base
   path = reeds_shepp_path_planning(start_pose, goal_pose, car_curvature, 1);
-  if (path == undefined) {
-    console.log("failed to plan" );
+  if (Array.isArray(path)) {
+    alert("failed to plan" );
     return;
   }
   if (animation_id != -1) {
@@ -65,15 +67,18 @@ function path_plan(e) {
 }
 
 function track() {
+  animation_id = window.requestAnimationFrame(track);
+  if (arrived == true) {
+    window.cancelAnimationFrame(animation_id);
+    return;
+  }
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  let arrived = false;
   [pedal, steer, arrived] = path_tracker.compute_cmd(car, path);
   car.update(pedal, steer, 0.1, arrived);
   car.render();
   path.render();
   canvas_arrow(ctx, goal_pose.x, goal_pose.y, arrow_head_pose.x, arrow_head_pose.y);
   canvas_cross(ctx, path.x[path_tracker.current_idx], path.y[path_tracker.current_idx]);
-  animation_id = window.requestAnimationFrame(track);
 }
 
 // resize canvas
@@ -97,5 +102,13 @@ function draw(e) {
 }
 
 function get_speed_input() {
-  car.set_max_speed(document.getElementById('car_speed').value);
+  let speed = document.getElementById('car_speed').value;
+  car.set_max_speed(speed);
+  document.getElementById("car_speed_text").innerHTML = speed;
+}
+
+function get_lookahead_input() {
+  let lk = document.getElementById('look_ahead').value;
+  path_tracker.set_lookahead(parseInt(lk));
+  document.getElementById("look_ahead_text").innerHTML = lk;
 }

@@ -5,23 +5,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>PP PT </title>
+  <title>Path planning && path tracking demo </title>
   <style>
-      #canvas{
-          border: 2px solid #333
-      }
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #canvas{
+        border: 2px solid #333
+    }
+    section{
+      margin-top: 20px;
+    }
+    span {
+      display: inline-block;
+      width: 20px;
+    }
   </style>
 </head>
 <body>
-  <canvas id="canvas" width="500" height="500"></canvas>
-  car_speed:<input type="number" id="car_speed" placeholder="30" onchange="get_speed_input()"><br>
-  <script src="https://linzhibo.github.io/JavaScriptRobotics/Common/types.js"></script>
-  <script src="https://linzhibo.github.io/JavaScriptRobotics/Utils/math_utils.js"></script>
-  <script src="https://linzhibo.github.io/JavaScriptRobotics/Utils/draw_utils.js"></script>
-  <script src="https://linzhibo.github.io/JavaScriptRobotics/RobotModels/car_model.js"></script>
-  <script src="https://linzhibo.github.io/JavaScriptRobotics/PathPlanning/reed_shepp.js"></script>
-  <script src="https://linzhibo.github.io/JavaScriptRobotics/PathTracking/pure_pursuit.js"></script>
-  <script src="../js/robotics/pp_pt.js"></script>
+  <div id="container">
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <section id="param">
+      car_speed: <span id="car_speed_text">30</span> <input type="range" min="1" max="100" value="30" class="slider" id="car_speed" onmousemove="get_speed_input()"><br> 
+      look_ahead: <span id="look_ahead_text">30</span> <input type="range" min="1" max="100" value="30" class="slider" id="look_ahead" onmousemove="get_lookahead_input()"><br> 
+    </section>
+    <script src="https://linzhibo.github.io/JavaScriptRobotics/Common/types.js"></script>
+    <script src="https://linzhibo.github.io/JavaScriptRobotics/Utils/math_utils.js"></script>
+    <script src="https://linzhibo.github.io/JavaScriptRobotics/Utils/draw_utils.js"></script>
+    <script src="https://linzhibo.github.io/JavaScriptRobotics/RobotModels/car_model.js"></script>
+    <script src="https://linzhibo.github.io/JavaScriptRobotics/PathPlanning/reed_shepp.js"></script>
+    <script src="https://linzhibo.github.io/JavaScriptRobotics/PathTracking/pure_pursuit.js"></script>
+    <script src="../js/robotics/pp_pt.js"></script>
+  </div>
 </body>
 
 </html>
